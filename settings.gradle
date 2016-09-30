@@ -1,0 +1,3 @@
+include ':fyber-app', ':fyber-core'
+project(':fyber-app').projectDir = new File('app')
+project(':fyber-core').projectDir = new File('core-lib')
