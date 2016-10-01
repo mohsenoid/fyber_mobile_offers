@@ -16,18 +16,15 @@ machine:
 
 dependencies:
     override:
-        - echo y | sudo apt-get update
-        - echo y | sudo apt-get install libpango-1.0-0
-        - echo y | sudo apt-get install openjdk-6-jre
-
         - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-24.0.2,android-24,extra-google-m2repository,extra-google-google_play_services,extra-android-support
 
-        - mkdir "/usr/local/android-sdk-linux/licenses" || true
-        - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "/usr/local/android-sdk-linux/licenses/android-sdk-license"
-        - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "/usr/local/android-sdk-linux/licenses/android-sdk-preview-license"
-        - echo -e "\nd975f751698a77b662f1254ddbeed3901e976f5a" > "/usr/local/android-sdk-linux/licenses/intel-android-extra-license"
+        - ANDROID_HOME=/usr/local/android-sdk-linux
+        - mkdir "$ANDROID_HOME/licenses" || true
+        - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+        - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+        - echo -e "\nd975f751698a77b662f1254ddbeed3901e976f5a" > "$ANDROID_HOME/licenses/intel-android-extra-license"
 
-        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+        - ./gradlew dependencies
 
 test:
     override:
