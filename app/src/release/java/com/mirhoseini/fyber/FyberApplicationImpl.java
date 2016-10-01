@@ -6,7 +6,8 @@ package com.mirhoseini.fyber;
 public class FyberApplicationImpl extends FyberApplication {
 
     @Override
-    void initApplication() {
+    public void initApplication() {
         // Crash report services can be initialized here for release version
     }
+
 }
