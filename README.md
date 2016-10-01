@@ -71,6 +71,8 @@ Layers communications are managed by [RxJava](https://github.com/ReactiveX/RxJav
 
 Dependency Injections are being managed by [Dagger](https://github.com/google/dagger) created by [Square](http://square.github.io) and now maintained by [Google](http://google.github.io/dagger/).
 
+![Diagram](diagram.png)
+
 Some minor Android common functions are managed using [AndroidUtils](https://github.com/mmirhoseini/android_utils) library, and disk caching is also being managed using [AppSettings](https://github.com/mmirhoseini/app_settings) library, both developed and published on jCenter by [myself](http://mirhoseini.com).
 
 Whole projects Dependencies are placed in "libraries.gradle" to avoid version conflicts and redundant in different modules.
