@@ -1,6 +1,7 @@
 package com.mirhoseini.fyber.view.fragment;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -15,66 +16,68 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.fyber.api.Offer;
-import com.mirhoseini.fyber.Presentation.OffersPresenter;
 import com.mirhoseini.fyber.R;
+import com.mirhoseini.fyber.client.GoogleAds;
 import com.mirhoseini.fyber.di.component.ApplicationComponent;
 import com.mirhoseini.fyber.di.module.OffersModule;
-import com.mirhoseini.fyber.util.AppConstants;
+import com.mirhoseini.fyber.util.Constants;
 import com.mirhoseini.fyber.util.EndlessRecyclerViewScrollListener;
 import com.mirhoseini.fyber.util.ItemSpaceDecoration;
 import com.mirhoseini.fyber.util.ValueManager;
 import com.mirhoseini.fyber.view.BaseView;
-import com.mirhoseini.fyber.view.OffersView;
 import com.mirhoseini.fyber.view.adapter.OffersRecyclerViewAdapter;
+import com.mirhoseini.fyber.viewmodel.OffersViewModel;
 import com.mirhoseini.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
- * Created by Mohsen on 30/09/2016.
+ * Created by Mohsen on 19/07/16.
  */
-public class OffersFragment extends BaseFragment implements OffersView, SwipeRefreshLayout.OnRefreshListener {
+
+public class OffersFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String ARG_API_KEY = "api_key";
 
-    @Inject
-    public OffersPresenter presenter;
+    // injecting dependencies via Dagger
     @Inject
     Context context;
     @Inject
-    ValueManager valueManager;
+    Resources resources;
+    @Inject
+    OffersViewModel viewModel;
 
+    // injecting views via ButterKnife
     @BindView(R.id.list)
     RecyclerView recyclerView;
     @BindView(R.id.no_internet)
-    View noInternet;
-    @BindView(R.id.network_error)
-    View networkError;
-    @BindView(R.id.no_content)
-    View noContent;
+    ImageView noInternet;
     @BindView(R.id.progress)
-    View progress;
+    ProgressBar progress;
     @BindView(R.id.progress_more)
-    View progressMore;
+    ProgressBar progressMore;
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefresh;
-
     int page;
     private int columnCount = 1;
-    private int pages = 0;
     private String apiKey;
-
     private OnListFragmentInteractionListener listener;
     private OffersRecyclerViewAdapter adapter;
+    private CompositeSubscription subscriptions;
     private LinearLayoutManager layoutManager;
+    private int pages = 0;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -92,22 +95,6 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
         return fragment;
     }
 
-    @OnClick(R.id.no_internet)
-    void onNoInternetClick() {
-        loadOffersData();
-    }
-
-    @OnClick(R.id.no_content)
-    void onNoContentClick() {
-        loadOffersData();
-    }
-
-    @OnClick(R.id.network_error)
-    void onNetworkErrorClick() {
-        loadOffersData();
-    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +103,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             apiKey = getArguments().getString(ARG_API_KEY);
         }
+
     }
 
     @Override
@@ -125,22 +113,34 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
 
         ButterKnife.bind(this, view);
 
-        // add material margins to list items card view
-        recyclerView.addItemDecoration(new ItemSpaceDecoration(AppConstants.RECYCLER_VIEW_ITEM_SPACE));
-
         // allow pull to refresh on list
         swipeRefresh.setOnRefreshListener(this);
 
+        initAdapter();
+
         initLayoutManager();
 
-        // load data for first run
-        if (adapter == null)
-            loadOffersData();
-        else
-            initRecyclerView();
+        initRecyclerView();
+
+        initBindings();
+
+        loadOffersData();
 
         return view;
     }
+
+    private void initLayoutManager() {
+        if (columnCount == 1) {
+            layoutManager = new LinearLayoutManager(context);
+        } else {
+            layoutManager = new GridLayoutManager(context, columnCount);
+        }
+    }
+
+    private void initAdapter() {
+        adapter = new OffersRecyclerViewAdapter(listener);
+    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -155,148 +155,186 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
 
     @Override
     protected void injectDependencies(ApplicationComponent component) {
-        component
-                .plus(new OffersModule(this))
-                .inject(this);
+        component.plus(new OffersModule()).inject(this);
+    }
+
+    protected void initBindings() {
+        // Observable that emits when the RecyclerView is scrolled to the bottom
+        Observable<Integer> infiniteScrollObservable = Observable.create(subscriber -> {
+            recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount) {
+                    if (page < pages) {
+                        int newPage = page + 1;
+                        Timber.d("Loading more movies, Page: %d", newPage);
+
+                        subscriber.onNext(newPage);
+                    }
+                }
+            });
+        });
+
+        subscriptions = new CompositeSubscription();
+
+        subscriptions.addAll(
+                // Bind loading status to show/hide progress
+                viewModel
+                        .isLoadingObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::setIsLoading),
+
+                // Bind list of offers
+                viewModel
+                        .offersObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::setOffersValue, this::onLoadError, this::onLoadComplete),
+
+                // Bind total pages of offers
+                viewModel
+                        .pagesObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::setPagesValue),
+
+                // Trigger next page load when RecyclerView is scrolled to the bottom
+                infiniteScrollObservable.subscribe(page -> loadMoreOffersData(page))
+        );
+    }
+
+    private void onLoadError(Throwable throwable) {
+        Timber.e(throwable, "Load error!");
+
+        showMessage(throwable.getMessage());
+
+        if (Utils.isConnected(context)) {
+            showRetryMessage();
+        } else {
+            showNetworkConnectionError(adapter.getItemCount() == 0);
+        }
+    }
+
+    private void onLoadComplete() {
+        if (!Utils.isConnected(context))
+            showOfflineMessage();
+    }
+
+    private void showMessage(String message) {
+        if (null != listener)
+            listener.showMessage(message);
+    }
+
+    public void setIsLoading(boolean isLoading) {
+        if (isLoading)
+            showProgress();
+        else
+            hideProgress();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
 
-        presenter.destroy();
-        presenter = null;
+        listener = null;
+        subscriptions.unsubscribe();
     }
 
-    @Override
     public void showProgress() {
         if (page == 1) {
             progress.setVisibility(View.VISIBLE);
+            swipeRefresh.setRefreshing(true);
         } else {
             progressMore.setVisibility(View.VISIBLE);
         }
 
         noInternet.setVisibility(View.GONE);
-        networkError.setVisibility(View.GONE);
-        noContent.setVisibility(View.GONE);
     }
 
-    @Override
     public void hideProgress() {
         progress.setVisibility(View.GONE);
         swipeRefresh.setRefreshing(false);
         progressMore.setVisibility(View.GONE);
     }
 
-    @Override
-    public void showMessage(String message) {
-        if (null != listener) {
-            listener.showMessage(message);
-        }
-    }
-
-    @Override
     public void showOfflineMessage() {
         if (null != listener) {
             listener.showOfflineMessage();
         }
 
         if (null == adapter || adapter.getItemCount() == 0) {
-            recyclerView.setVisibility(View.GONE);
             noInternet.setVisibility(View.VISIBLE);
         }
     }
 
-    @Override
     public void showNetworkConnectionError(boolean isForce) {
         if (null != listener) {
             listener.showNetworkConnectionError(isForce);
         }
-
-        if (null == adapter || adapter.getItemCount() == 0) {
-            noInternet.setVisibility(View.VISIBLE);
-        }
     }
 
-    @Override
     public void showRetryMessage() {
         Timber.d("Showing Retry Message");
 
-        if (null == adapter || adapter.getItemCount() == 0) {
-            recyclerView.setVisibility(View.GONE);
-            networkError.setVisibility(View.VISIBLE);
-        }
-
-        Snackbar.make(getView(), R.string.retry_message, Snackbar.LENGTH_LONG)
+        Snackbar.make(getView(), R.string.retry_message, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.load_retry, v -> loadOffersData())
                 .setActionTextColor(Color.RED)
                 .show();
     }
 
-    @Override
-    public void setNoOffers() {
-        Timber.d("No offer available!");
-
-        pages = 0;
-        recyclerView.setVisibility(View.GONE);
-
-        noContent.setVisibility(View.VISIBLE);
-    }
-
     private void loadOffersData() {
-        adapter = null;
         loadMoreOffersData(1);
     }
 
     private void loadMoreOffersData(int newPage) {
         page = newPage;
-        presenter.loadOffersData(Utils.isConnected(context),
-                page,
-                Locale.getDefault().getLanguage(),
-                Utils.getAndroidVersion(),
-                Utils.getCurrentTimestamp(),
-                Utils.getIPAddress(true),
-                Utils.isTablet(context) ? "tablet" : "phone",
-                apiKey);
+
+        Observable.combineLatest(
+                GoogleAds.getAdIdObservable(context),
+                GoogleAds.getAdIdEnabledObservable(context),
+                (String adId, Boolean adIdEnabled) ->
+                        viewModel.loadOffersDataObservable(
+                                page,
+                                ValueManager.getApplicationId(context),
+                                ValueManager.getUserId(context),
+                                Locale.getDefault().getLanguage(),
+                                Utils.getAndroidVersion(),
+                                ValueManager.getCurrentTimestamp(),
+                                adId,
+                                adIdEnabled,
+                                ValueManager.getIPAddress(true),
+                                ValueManager.getPub0(context),
+                                Constants.OFFER_TYPES,
+                                ValueManager.isTablet(context) ? "tablet" : "phone",
+                                apiKey))
+                .subscribeOn(Schedulers.io())
+                .subscribe(done -> {
+                }, this::onLoadError);
     }
 
-    @Override
-    public void setOffersValue(Offer[] offers, int pages) {
-        Timber.d("Loaded Page: %d of %d", page, pages);
+    public void setOffersValue(ArrayList<Offer> offers) {
+        Timber.d("Loaded Page: %d", page);
 
-        if (null == adapter) {
-            adapter = new OffersRecyclerViewAdapter(offers, listener);
-            initRecyclerView();
-        } else {
-            adapter.addMoreOffers(offers);
+        if (null != offers) {
+            adapter.setOffers(offers);
             adapter.notifyDataSetChanged();
         }
+
+        if (!Utils.isConnected(context))
+            showOfflineMessage();
 
         page++;
     }
 
-    private void initLayoutManager() {
-        if (columnCount == 1) {
-            layoutManager = new LinearLayoutManager(context);
-        } else {
-            layoutManager = new GridLayoutManager(context, columnCount);
-        }
+    public void setPagesValue(int pages) {
+        Timber.d("Loaded total Pages count: %d", pages);
+
+        this.pages = pages;
     }
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                if (page < pages) {
-                    Timber.d("Loading more offers, Page: %d", page + 1);
 
-                    loadMoreOffersData(page + 1);
-                }
-            }
-        });
+        // add material margins to list items card view
+        recyclerView.addItemDecoration(new ItemSpaceDecoration(Constants.RECYCLER_VIEW_ITEM_SPACE));
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -305,8 +343,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     }
 
     public interface OnListFragmentInteractionListener extends BaseView {
-
-        void onListFragmentInteraction(Offer offer);
-
+        void onListFragmentInteraction(Offer movie);
     }
+
 }

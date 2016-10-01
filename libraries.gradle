@@ -5,16 +5,17 @@ ext {
 
     //Android
     androidSupportVersion = "24.2.1"
+    constraintLayoutVersion = "1.0.0-alpha7"
     butterknifeVersion = "8.0.1"
     rxandroidVersion = "1.2.1"
     okhttpVersion = "3.4.1"
     retrofitVersion = "2.1.0"
-    utilsVersion = "1.0.1"
-    appSettingsVersion = "1.0.2"
+    utilsVersion = "1.0.0"
     timberVersion = "4.1.2"
     picassoVersion = "2.5.2"
     daggerVersion = "2.4"
     firebaseVersion = "9.4.0"
+    appSettingsVersion = "1.0.2"
     gmsVersion = "9.6.0"
 
     //Java
@@ -27,12 +28,14 @@ ext {
     supportTestVesion = "0.5"
     robolectricVersion = "3.1-rc1"
     espressoVersion = "2.2.2"
+    robospockVersion = "1.0.0"
 
     libraries = [
             androidSupport   : "com.android.support:support-v4:${androidSupportVersion}",
             appCompat        : "com.android.support:appcompat-v7:${androidSupportVersion}",
             designSupport    : "com.android.support:design:${androidSupportVersion}",
             vectorSupport    : "com.android.support:support-vector-drawable:${androidSupportVersion}",
+            constraintLayout : "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}",
             cardView         : "com.android.support:cardview-v7:${androidSupportVersion}",
             recyclerView     : "com.android.support:recyclerview-v7:${androidSupportVersion}",
             palette          : "com.android.support:palette-v7:${androidSupportVersion}",
@@ -52,7 +55,7 @@ ext {
             firebase         : "com.google.firebase:firebase-core:${firebaseVersion}",
             firebaseMessaging: "com.google.firebase:firebase-messaging:${firebaseVersion}",
             firebaseCrash    : "com.google.firebase:firebase-crash:${firebaseVersion}",
-            gmsAds           : "com.google.android.gms:play-services-ads:${gmsVersion}",
+            gmsAds              : "com.google.android.gms:play-services-ads:${gmsVersion}",
 
     ]
 
@@ -72,6 +75,7 @@ ext {
             supportTestRules  : "com.android.support.test:rules:${supportTestVesion}",
             espresso          : "com.android.support.test.espresso:espresso-core:${espressoVersion}",
             espressoContrib   : "com.android.support.test.espresso:espresso-contrib:${espressoVersion}",
+            robospock         : "org.robospock:robospock:${robospockVersion}",
     ]
 
 }

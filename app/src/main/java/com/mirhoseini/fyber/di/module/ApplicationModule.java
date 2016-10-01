@@ -2,14 +2,9 @@ package com.mirhoseini.fyber.di.module;
 
 import android.content.Context;
 
+import com.mirhoseini.appsettings.AppSettings;
 import com.mirhoseini.fyber.BuildConfig;
-import com.mirhoseini.fyber.util.AppGoogleAds;
-import com.mirhoseini.fyber.util.AppSchedulerProvider;
-import com.mirhoseini.fyber.util.AppValueManager;
 import com.mirhoseini.fyber.util.Constants;
-import com.mirhoseini.fyber.util.GoogleAds;
-import com.mirhoseini.fyber.util.SchedulerProvider;
-import com.mirhoseini.fyber.util.ValueManager;
 import com.mirhoseini.utils.Utils;
 
 import java.io.File;
@@ -20,6 +15,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.HttpUrl;
+
 
 /**
  * Created by Mohsen on 30/09/2016.
@@ -44,12 +40,6 @@ public class ApplicationModule {
     @Singleton
     public HttpUrl provideEndpoint() {
         return HttpUrl.parse(Constants.BASE_URL);
-    }
-
-    @Provides
-    @Singleton
-    public SchedulerProvider provideAppScheduler() {
-        return new AppSchedulerProvider();
     }
 
     @Provides
@@ -81,14 +71,14 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Singleton
-    public ValueManager provideValueManager(Context context) {
-        return new AppValueManager(context);
+    @Named("isConnected")
+    public boolean provideIsConnected(Context context) {
+        return Utils.isConnected(context);
     }
 
     @Provides
-    @Singleton
-    public GoogleAds provideGoogleAds(Context context, SchedulerProvider scheduler, ValueManager valueManager) {
-        return new AppGoogleAds(context, scheduler, valueManager);
+    @Named("api_key")
+    public String provideApiKey(Context context) {
+        return AppSettings.getString(context, Constants.KEY_API_KEY, "");
     }
 }

@@ -9,16 +9,15 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
 
-    <string name="application_id_required_error">please enter a number for Application ID</string>
+    <string name="application_id_required_error">please enter Application ID</string>
+    <string name="application_id_number_error">Application ID must be a number</string>
     <string name="api_key_required_error">please enter API Key</string>
     <string name="user_id_required_error">please enter User ID</string>
     <string name="pub0_required_error">please enter Pub0</string>
 
     <string name="offline_message">No internet connection, Offline data!</string>
     <string name="go_online">Go Online</string>
-    <string name="retry_message">Network error!</string>
+    <string name="retry_message">Network error, offline data!</string>
     <string name="load_retry">Retry</string>
-    <string name="no_offer">No offers</string>
-    <string name="payload">Payload</string>
 
 </resources>

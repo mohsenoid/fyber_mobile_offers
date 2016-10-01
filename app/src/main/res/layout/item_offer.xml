@@ -35,9 +35,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/image"
+                android:paddingTop="@dimen/keyLine1"
                 android:paddingLeft="@dimen/keyLine1"
                 android:paddingRight="@dimen/keyLine1"
-                android:paddingTop="@dimen/keyLine1"
                 android:text="@{offer.title}"
                 android:textAppearance="@style/textAppearanceListItemTitle"
                 tools:text="TITLE" />
@@ -58,23 +58,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/teaser"
-                android:paddingBottom="@dimen/keyLine1"
-                android:paddingRight="@dimen/keyLine1"
+                android:layout_alignParentTop="true"
+                android:padding="@dimen/keyLine1"
                 android:text="@{offer.payout}"
-                android:textAppearance="@style/textAppearanceListItemSmall"
-                tools:text="PAYLOAD" />
-
-            <TextView
-                android:id="@+id/payloadLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/teaser"
-                android:layout_toLeftOf="@+id/payload"
-                android:paddingBottom="@dimen/keyLine1"
-                android:paddingRight="@dimen/keyLine1"
-                android:text="@string/payload"
-                android:textAppearance="@style/textAppearanceListItemSmall" />
+                android:textAppearance="@style/textAppearanceListItemText"
+                tools:text="TEASER" />
 
         </RelativeLayout>
 

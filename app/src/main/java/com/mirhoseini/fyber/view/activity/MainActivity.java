@@ -8,18 +8,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.fyber.api.Offer;
-import com.mirhoseini.fyber.Presentation.MainPresenter;
 import com.mirhoseini.fyber.R;
 import com.mirhoseini.fyber.di.component.ApplicationComponent;
-import com.mirhoseini.fyber.di.module.MainModule;
-import com.mirhoseini.fyber.view.MainView;
+import com.mirhoseini.fyber.util.ValueManager;
 import com.mirhoseini.fyber.view.fragment.OffersFragment;
 import com.mirhoseini.utils.Utils;
 
@@ -32,18 +32,16 @@ import timber.log.Timber;
 /**
  * Created by Mohsen on 30/09/2016.
  */
-public class MainActivity extends BaseActivity implements MainView, OffersFragment.OnListFragmentInteractionListener {
+public class MainActivity extends BaseActivity implements OffersFragment.OnListFragmentInteractionListener {
 
     private static final int REQUEST_CODE_LOGIN = 1;
-    public static final String TAG_OFFERS_FRAGMENT = "offers_fragment";
+    private static final String TAG_OFFERS_FRAGMENT = "offers_fragment";
 
     // injecting dependencies via Dagger
     @Inject
     Context context;
     @Inject
     Resources resources;
-    @Inject
-    MainPresenter presenter;
 
     // injecting views via ButterKnife
     @BindView(R.id.toolbar)
@@ -51,7 +49,6 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
 
     private OffersFragment offersFragment;
     AlertDialog internetConnectionDialog;
-    private String apiKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +63,6 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
         Timber.d("Main Activity Created");
     }
 
-    @Override
-    protected void injectDependencies(ApplicationComponent component) {
-        component
-                .plus(new MainModule(this))
-                .inject(this);
-    }
-
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.logo);
@@ -82,37 +72,25 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
     protected void onResume() {
         super.onResume();
 
-        presenter.checkLogin();
+        if (TextUtils.isEmpty(ValueManager.getApiKey(context))) {
+            openLoginActivity();
+        } else {
+            createFragment();
+            attachFragment();
+        }
 
         Timber.d("Main Activity Resumed");
-    }
-
-    @Override
-    public void doLogin() {
-        openLoginActivity();
-    }
-
-    @Override
-    public void isLogin(String apiKey) {
-        this.apiKey = apiKey;
-        createFragment();
-        attachFragment();
-    }
-
-    @Override
-    public void showLoginMessage() {
-        showMessage(resources.getString(R.string.login_required));
     }
 
     private void createFragment() {
         // change column count according fo screen orientation
         int columnCount;
-        if (Utils.isPortrait(context))
+        if (ValueManager.isPortrait(context))
             columnCount = 1;
         else
             columnCount = 2;
 
-        offersFragment = OffersFragment.newInstance(columnCount, apiKey);
+        offersFragment = OffersFragment.newInstance(columnCount, ValueManager.getApiKey(context));
     }
 
     private void attachFragment() {
@@ -121,7 +99,10 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
         fragmentTransaction.commitAllowingStateLoss();
     }
 
-
+    @Override
+    protected void injectDependencies(ApplicationComponent component) {
+        component.inject(this);
+    }
 
     private void openLoginActivity() {
         startActivityForResult(LoginActivity.newIntent(context), REQUEST_CODE_LOGIN);
@@ -133,7 +114,11 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
             if (resultCode == RESULT_OK) {
                 createFragment();
             } else {
-                presenter.checkLogin();
+                if (TextUtils.isEmpty(ValueManager.getApiKey(context))) {
+                    showMessage(resources.getString(R.string.login_required));
+
+                    openLoginActivity();
+                }
             }
         }
     }
@@ -194,5 +179,4 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
 //        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedView, "cover");
 //        ActivityCompat.startActivity(this, detailsIntent, options.toBundle());
     }
-
 }

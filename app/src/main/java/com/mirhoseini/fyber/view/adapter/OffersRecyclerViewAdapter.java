@@ -13,7 +13,6 @@ import com.mirhoseini.fyber.R;
 import com.mirhoseini.fyber.view.fragment.OffersFragment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -25,13 +24,8 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
     private ArrayList<Offer> offers = new ArrayList<>();
 
-    public OffersRecyclerViewAdapter(Offer[] offers, OffersFragment.OnListFragmentInteractionListener listener) {
-        this.offers = new ArrayList<>(Arrays.asList(offers));
+    public OffersRecyclerViewAdapter(OffersFragment.OnListFragmentInteractionListener listener) {
         this.listener = listener;
-    }
-
-    public void addMoreOffers(Offer[] offers) {
-        this.offers.addAll(new ArrayList<>(Arrays.asList(offers)));
     }
 
     @Override

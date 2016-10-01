@@ -7,8 +7,9 @@ import com.mirhoseini.fyber.FyberApplication;
 import com.mirhoseini.fyber.di.component.ApplicationComponent;
 
 /**
- * Created by Mohsen on 30/09/2016.
+ * Created by Mohsen on 19/07/16.
  */
+
 public abstract class BaseFragment extends Fragment {
 
     @Override

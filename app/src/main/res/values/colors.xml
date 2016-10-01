@@ -6,7 +6,7 @@
     <color name="colorAccent">#FFB549</color>
     <color name="colorControlNormal">#FFF</color>
 
-    <color name="trans_gray">#A555</color>
+    <color name="trans_gray">#5555</color>
     <color name="gray">#555</color>
 
 </resources>

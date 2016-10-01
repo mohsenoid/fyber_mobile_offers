@@ -8,11 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 
-import com.mirhoseini.fyber.Presentation.LoginPresenter;
 import com.mirhoseini.fyber.R;
 import com.mirhoseini.fyber.di.component.ApplicationComponent;
-import com.mirhoseini.fyber.di.module.LoginModule;
-import com.mirhoseini.fyber.view.LoginView;
+import com.mirhoseini.fyber.util.Constants;
+import com.mirhoseini.fyber.util.ValueManager;
 
 import javax.inject.Inject;
 
@@ -24,15 +23,13 @@ import timber.log.Timber;
 /**
  * Created by Mohsen on 30/09/2016.
  */
-public class LoginActivity extends BaseActivity implements LoginView {
+public class LoginActivity extends BaseActivity {
 
     // injecting dependencies via Dagger
     @Inject
     Context context;
     @Inject
     Resources resources;
-    @Inject
-    LoginPresenter presenter;
 
     // injecting views via ButterKnife
     @BindView(R.id.toolbar)
@@ -61,12 +58,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @OnClick(R.id.save)
     void onSaveClick() {
         if (checkValuesValidation()) {
-            presenter.saveValues(
-                    userId.getText().toString().trim(),
-                    apiKey.getText().toString().trim(),
-                    Integer.parseInt(applicationId.getText().toString().trim()),
-                    pub0.getText().toString().trim()
-            );
+            saveValues();
 
             Intent intent = getIntent();
             setResult(RESULT_OK, intent);
@@ -79,28 +71,36 @@ public class LoginActivity extends BaseActivity implements LoginView {
         View focusView = null;
 
         //check application id validations
-        if (presenter.checkPub0Validation(pub0.getText().toString().trim())) {
+        if (pub0.getText().toString().trim().isEmpty()) {
             pub0.setError(resources.getString(R.string.pub0_required_error));
             focusView = pub0;
             validation = false;
         }
 
         //check application id validations
-        if (presenter.checkApplicationIdValidation(applicationId.getText().toString().trim())) {
+        if (applicationId.getText().toString().trim().isEmpty()) {
             applicationId.setError(resources.getString(R.string.application_id_required_error));
             focusView = applicationId;
             validation = false;
+        } else {
+            try {
+                Integer.parseInt(applicationId.getText().toString().trim());
+            } catch (NumberFormatException e) {
+                applicationId.setError(resources.getString(R.string.application_id_number_error));
+                focusView = applicationId;
+                validation = false;
+            }
         }
 
         //check api key validations
-        if (presenter.checkApiKeyValidation(apiKey.getText().toString().trim())) {
+        if (apiKey.getText().toString().trim().isEmpty()) {
             apiKey.setError(resources.getString(R.string.api_key_required_error));
             focusView = apiKey;
             validation = false;
         }
 
         //check user id validations
-        if (presenter.checkUserIdValidation(userId.getText().toString().trim())) {
+        if (userId.getText().toString().trim().isEmpty()) {
             userId.setError(resources.getString(R.string.user_id_required_error));
             focusView = userId;
             validation = false;
@@ -110,6 +110,13 @@ public class LoginActivity extends BaseActivity implements LoginView {
             focusView.requestFocus();
 
         return validation;
+    }
+
+    private void saveValues() {
+        ValueManager.setUserId(context, userId.getText().toString().trim());
+        ValueManager.setApiKey(context, apiKey.getText().toString().trim());
+        ValueManager.setApplicationId(context, Integer.parseInt(applicationId.getText().toString().trim()));
+        ValueManager.setPub0(context, pub0.getText().toString().trim());
     }
 
     @Override
@@ -122,7 +129,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
         setupToolbar();
 
-        presenter.loadValues();
+        fillValues();
 
         Timber.d("Login Activity Created");
     }
@@ -132,19 +139,16 @@ public class LoginActivity extends BaseActivity implements LoginView {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    @Override
-    public void fillValues(String userId, String apiKey, int applicationId, String pub0) {
+    private void fillValues() {
         // filling values from cache or some sample values which must be removed in final version
-        this.userId.setText(userId);
-        this.apiKey.setText(apiKey);
-        this.applicationId.setText(applicationId + "");
-        this.pub0.setText(pub0);
+        userId.setText(null == ValueManager.getUserId(context) ? Constants.SAMPLE_USER_ID : ValueManager.getUserId(context));
+        apiKey.setText(null == ValueManager.getApiKey(context) ? Constants.SAMPLE_API_KEY : ValueManager.getApiKey(context));
+        applicationId.setText(null == ValueManager.getApplicationId(context) ? Constants.SAMPLE_APPLICATION_ID : ValueManager.getApplicationId(context) + "");
+        pub0.setText(null == ValueManager.getPub0(context) ? Constants.SAMPLE_PUB0 : ValueManager.getPub0(context));
     }
 
     @Override
     protected void injectDependencies(ApplicationComponent component) {
-        component
-                .plus(new LoginModule(this))
-                .inject(this);
+        component.inject(this);
     }
 }

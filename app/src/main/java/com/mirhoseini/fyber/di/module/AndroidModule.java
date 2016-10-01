@@ -19,8 +19,8 @@ import dagger.Provides;
 public class AndroidModule {
     private FyberApplication application;
 
-    public AndroidModule(FyberApplication application) {
-        this.application = application;
+    public AndroidModule(FyberApplication traktApplication) {
+        this.application = traktApplication;
     }
 
     @Provides

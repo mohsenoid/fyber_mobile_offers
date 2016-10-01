@@ -25,43 +25,8 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
-        android:padding="@dimen/keyLine1"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_no_internet" />
-
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/network_error"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:padding="@dimen/keyLine1"
-        android:visibility="gone"
-        app:srcCompat="@drawable/ic_network_error" />
-
-    <LinearLayout
-        android:id="@+id/no_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="@dimen/keyLine1"
-        android:visibility="gone">
-
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/no_content_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_no_content" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/no_content_image"
-            android:layout_gravity="center"
-            android:text="@string/no_offer"
-            android:textColor="@color/trans_gray" />
-    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress"
