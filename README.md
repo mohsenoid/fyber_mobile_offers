@@ -1,4 +1,4 @@
-Fyber Mobile Offers Application
+Fyber Mobile Offers Application [![CircleCI](https://circleci.com/gh/mmirhoseini/fyber_mobile_offers.svg?style=svg)](https://circleci.com/gh/mmirhoseini/fyber_mobile_offers)
 ===============================
 
 This repository holds the source code of the Fyber Mobile Offers Application, a simple Android client for the [Fyber.com](http://fyber.com).
@@ -90,3 +90,5 @@ Google Ads ID and Limitation required for API received using GoogleAds class and
 Used new SupportVector library in some icons cases for a better UI.
 
 Sample test cases are implemented by mockito, espresso, robolectric and mocking dagger.
+
+Used [circleci](http://circleci.com) as Continues Integration service which binded with Github repo.
