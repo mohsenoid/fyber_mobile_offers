@@ -2,11 +2,11 @@ package com.mirhoseini.fyber.di.component;
 
 import com.mirhoseini.fyber.di.module.AndroidModule;
 import com.mirhoseini.fyber.di.module.ApiModule;
+import com.mirhoseini.fyber.di.module.AppOffersModule;
 import com.mirhoseini.fyber.di.module.ApplicationModule;
 import com.mirhoseini.fyber.di.module.ClientModule;
 import com.mirhoseini.fyber.di.module.LoginModule;
 import com.mirhoseini.fyber.di.module.MainModule;
-import com.mirhoseini.fyber.di.module.OffersModule;
 
 import javax.inject.Singleton;
 
@@ -28,7 +28,7 @@ public interface ApplicationComponent {
 
     LoginSubComponent plus(LoginModule module);
 
-    OffersSubComponent plus(OffersModule module);
+    OffersSubComponent plus(AppOffersModule module);
 
 
 }

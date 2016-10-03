@@ -25,9 +25,12 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
     private ArrayList<Offer> offers = new ArrayList<>();
 
-    public OffersRecyclerViewAdapter(Offer[] offers, OffersFragment.OnListFragmentInteractionListener listener) {
-        this.offers = new ArrayList<>(Arrays.asList(offers));
+    public OffersRecyclerViewAdapter(OffersFragment.OnListFragmentInteractionListener listener) {
         this.listener = listener;
+    }
+
+    public void setOffers(Offer[] offers) {
+        this.offers = new ArrayList<>(Arrays.asList(offers));
     }
 
     public void addMoreOffers(Offer[] offers) {
@@ -61,11 +64,14 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
     @Override
     public int getItemCount() {
-        return offers.size();
+        if (null == offers)
+            return 0;
+        else
+            return offers.size();
     }
 
-    public void setOffers(ArrayList<Offer> offers) {
-        this.offers = offers;
+    public void clearOffers() {
+        offers = null;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

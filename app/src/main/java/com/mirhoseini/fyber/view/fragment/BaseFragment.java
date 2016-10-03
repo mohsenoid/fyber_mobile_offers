@@ -15,11 +15,11 @@ public abstract class BaseFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        injectDependencies(FyberApplication.getComponent());
+        injectDependencies(FyberApplication.getComponent(), context);
 
         // can be used for general purpose in all Fragments of Application
     }
 
-    protected abstract void injectDependencies(ApplicationComponent component);
+    protected abstract void injectDependencies(ApplicationComponent component, Context context);
 
 }

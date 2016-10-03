@@ -5,20 +5,17 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.fyber.api.Offer;
 import com.mirhoseini.fyber.Presentation.OffersPresenter;
 import com.mirhoseini.fyber.R;
 import com.mirhoseini.fyber.di.component.ApplicationComponent;
-import com.mirhoseini.fyber.di.module.OffersModule;
+import com.mirhoseini.fyber.di.module.AppOffersModule;
 import com.mirhoseini.fyber.util.AppConstants;
 import com.mirhoseini.fyber.util.EndlessRecyclerViewScrollListener;
 import com.mirhoseini.fyber.util.ItemSpaceDecoration;
@@ -51,6 +48,11 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     Context context;
     @Inject
     ValueManager valueManager;
+    @Inject
+    LinearLayoutManager layoutManager;
+    @Inject
+    OffersRecyclerViewAdapter adapter;
+
 
     @BindView(R.id.list)
     RecyclerView recyclerView;
@@ -73,8 +75,6 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     private String apiKey;
 
     private OnListFragmentInteractionListener listener;
-    private OffersRecyclerViewAdapter adapter;
-    private LinearLayoutManager layoutManager;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -131,10 +131,8 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
         // allow pull to refresh on list
         swipeRefresh.setOnRefreshListener(this);
 
-        initLayoutManager();
-
         // load data for first run
-        if (adapter == null)
+        if (adapter.getItemCount() == 0)
             loadOffersData();
         else
             initRecyclerView();
@@ -143,20 +141,9 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            listener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    protected void injectDependencies(ApplicationComponent component) {
+    protected void injectDependencies(ApplicationComponent component, Context context) {
         component
-                .plus(new OffersModule(this))
+                .plus(new AppOffersModule(context, this, columnCount))
                 .inject(this);
     }
 
@@ -202,7 +189,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
             listener.showOfflineMessage();
         }
 
-        if (null == adapter || adapter.getItemCount() == 0) {
+        if ( adapter.getItemCount() == 0) {
             recyclerView.setVisibility(View.GONE);
             noInternet.setVisibility(View.VISIBLE);
         }
@@ -214,7 +201,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
             listener.showNetworkConnectionError(isForce);
         }
 
-        if (null == adapter || adapter.getItemCount() == 0) {
+        if (adapter.getItemCount() == 0) {
             noInternet.setVisibility(View.VISIBLE);
         }
     }
@@ -223,7 +210,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     public void showRetryMessage() {
         Timber.d("Showing Retry Message");
 
-        if (null == adapter || adapter.getItemCount() == 0) {
+        if (adapter.getItemCount() == 0) {
             recyclerView.setVisibility(View.GONE);
             networkError.setVisibility(View.VISIBLE);
         }
@@ -245,7 +232,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     }
 
     private void loadOffersData() {
-        adapter = null;
+        adapter.clearOffers();
         loadMoreOffersData(1);
     }
 
@@ -265,8 +252,9 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     public void setOffersValue(Offer[] offers, int pages) {
         Timber.d("Loaded Page: %d of %d", page, pages);
 
-        if (null == adapter) {
-            adapter = new OffersRecyclerViewAdapter(offers, listener);
+        if (adapter.getItemCount() == 0) {
+//            adapter = new OffersRecyclerViewAdapter(offers, listener);
+            adapter.setOffers(offers);
             initRecyclerView();
         } else {
             adapter.addMoreOffers(offers);
@@ -274,14 +262,6 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
         }
 
         page++;
-    }
-
-    private void initLayoutManager() {
-        if (columnCount == 1) {
-            layoutManager = new LinearLayoutManager(context);
-        } else {
-            layoutManager = new GridLayoutManager(context, columnCount);
-        }
     }
 
     private void initRecyclerView() {
