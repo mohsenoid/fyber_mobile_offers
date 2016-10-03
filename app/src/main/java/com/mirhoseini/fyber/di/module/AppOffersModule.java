@@ -36,6 +36,12 @@ public class AppOffersModule extends OffersModule {
 
     @Provides
     @OffersScope
+    public OffersFragment.OnListFragmentInteractionListener provideOnListFragmentInteractionListener() {
+        return listener;
+    }
+
+    @Provides
+    @OffersScope
     public LinearLayoutManager provideLayoutManager() {
         if (columnCount == 1) {
             return new LinearLayoutManager(context);

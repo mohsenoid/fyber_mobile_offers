@@ -1,7 +1,5 @@
 package com.mirhoseini.fyber.view.adapter;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,7 @@ import java.util.Arrays;
 /**
  * Created by Mohsen on 30/09/2016.
  */
-public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecyclerViewAdapter.ViewHolder> {
+public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OfferViewHolder> {
 
     private final OffersFragment.OnListFragmentInteractionListener listener;
 
@@ -38,14 +36,14 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OfferViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_offer, parent, false);
-        return new ViewHolder(view);
+        return new OfferViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final OfferViewHolder holder, int position) {
 
         final Offer offer = offers.get(position);
 
@@ -64,33 +62,11 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
     @Override
     public int getItemCount() {
-        if (null == offers)
-            return 0;
-        else
-            return offers.size();
+        return offers.size();
     }
 
     public void clearOffers() {
-        offers = null;
+        offers = new ArrayList<>();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        public final View view;
-        Offer offer;
-        private ViewDataBinding binding;
-
-        public ViewHolder(View view) {
-            super(view);
-            this.view = view;
-
-            binding = DataBindingUtil.bind(view);
-
-        }
-
-        public ViewDataBinding getBinding() {
-            return binding;
-        }
-
-    }
 }

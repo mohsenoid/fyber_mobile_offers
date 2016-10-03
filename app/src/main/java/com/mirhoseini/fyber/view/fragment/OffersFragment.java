@@ -52,7 +52,8 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     LinearLayoutManager layoutManager;
     @Inject
     OffersRecyclerViewAdapter adapter;
-
+    @Inject
+    OnListFragmentInteractionListener listener;
 
     @BindView(R.id.list)
     RecyclerView recyclerView;
@@ -73,8 +74,6 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     private int columnCount = 1;
     private int pages = 0;
     private String apiKey;
-
-    private OnListFragmentInteractionListener listener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -189,7 +188,7 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
             listener.showOfflineMessage();
         }
 
-        if ( adapter.getItemCount() == 0) {
+        if (adapter.getItemCount() == 0) {
             recyclerView.setVisibility(View.GONE);
             noInternet.setVisibility(View.VISIBLE);
         }
