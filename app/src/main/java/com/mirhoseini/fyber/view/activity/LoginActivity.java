@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -50,6 +51,8 @@ public class LoginActivity extends BaseActivity implements LoginView {
     Button cancel;
     @BindView(R.id.save)
     Button save;
+
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
@@ -102,9 +105,10 @@ public class LoginActivity extends BaseActivity implements LoginView {
         // inject views using ButterKnife
         ButterKnife.bind(this);
 
-        RxView.clicks(cancel).subscribe(this::cancelLogin);
-
-        RxView.clicks(save).subscribe(this::saveLogin);
+        subscriptions.addAll(
+                RxView.clicks(cancel).subscribe(this::cancelLogin),
+                RxView.clicks(save).subscribe(this::saveLogin)
+        );
 
         setupToolbar();
 
@@ -153,5 +157,12 @@ public class LoginActivity extends BaseActivity implements LoginView {
         component
                 .plus(new LoginModule(this))
                 .inject(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        subscriptions.unsubscribe();
     }
 }

@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -74,6 +75,8 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     private int columnCount = 1;
     private int pages = 0;
     private String apiKey;
+
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -121,9 +124,11 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        adapter.asObservable()
-                .filter(offer -> null != listener)
-                .subscribe(listener::onListFragmentInteraction);
+        subscriptions.add(
+                adapter.asObservable()
+                        .filter(offer -> null != listener)
+                        .subscribe(listener::onListFragmentInteraction)
+        );
     }
 
     @Override
@@ -162,6 +167,8 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
 
         presenter.destroy();
         presenter = null;
+
+        subscriptions.unsubscribe();
     }
 
     @Override
