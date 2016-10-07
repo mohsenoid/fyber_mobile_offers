@@ -40,10 +40,12 @@ public class AppGoogleAds implements GoogleAds {
         if (adIdSubscription == null || adIdSubscription.isUnsubscribed()) {
             adIdSubject = ReplaySubject.create();
 
-            adIdSubscription = Observable.concat(
-                    getAdIdFromMemoryObservable(),
-                    getAdIdFromGoogleObservable())
+            adIdSubscription = Observable
+                    .concat(getAdIdFromMemoryObservable(),
+                            getAdIdFromGoogleObservable())
                     .first(entity -> entity != null)
+                    // lets retry if something goes wrong!
+                    .retry(2)
                     .subscribe(adIdSubject);
         }
 
@@ -86,8 +88,12 @@ public class AppGoogleAds implements GoogleAds {
         if (adIdEnabledSubscription == null || adIdEnabledSubscription.isUnsubscribed()) {
             adIdEnabledSubject = ReplaySubject.create();
 
-            adIdEnabledSubscription = Observable.concat(getAdIdEnabledFromMemoryObservable(), getAdIdEnabledFromGoogleObservable())
+            adIdEnabledSubscription = Observable
+                    .concat(getAdIdEnabledFromMemoryObservable(),
+                            getAdIdEnabledFromGoogleObservable())
                     .first(entity -> entity != null)
+                    // lets retry if something goes wrong!
+                    .retry(2)
                     .subscribe(adIdEnabledSubject);
         }
 

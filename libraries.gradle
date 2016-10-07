@@ -14,8 +14,8 @@ ext {
     timberVersion = "4.1.2"
     picassoVersion = "2.5.2"
     daggerVersion = "2.4"
-    firebaseVersion = "9.4.0"
     gmsVersion = "9.6.0"
+    rxbindingVersion = "0.4.0"
 
     //Java
     rxjavaVersion = "1.1.9"
@@ -29,31 +29,28 @@ ext {
     espressoVersion = "2.2.2"
 
     libraries = [
-            androidSupport   : "com.android.support:support-v4:${androidSupportVersion}",
-            appCompat        : "com.android.support:appcompat-v7:${androidSupportVersion}",
-            designSupport    : "com.android.support:design:${androidSupportVersion}",
-            vectorSupport    : "com.android.support:support-vector-drawable:${androidSupportVersion}",
-            cardView         : "com.android.support:cardview-v7:${androidSupportVersion}",
-            recyclerView     : "com.android.support:recyclerview-v7:${androidSupportVersion}",
-            palette          : "com.android.support:palette-v7:${androidSupportVersion}",
-            rxjava           : "io.reactivex:rxjava:${rxjavaVersion}",
-            rxandroid        : "io.reactivex:rxandroid:${rxandroidVersion}",
-            utils            : "com.mirhoseini.utils:utils:${utilsVersion}",
-            appSettings      : "com.mirhoseini.appsettings:appsettings:${appSettingsVersion}",
-            timber           : "com.jakewharton.timber:timber:${timberVersion}",
-            butterknife      : "com.jakewharton:butterknife:${butterknifeVersion}",
-            okhttp           : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
-            okhttpLogging    : "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}",
-            retrofit         : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
-            retrofitConverter: "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
-            retrofitAdapter  : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
-            picasso          : "com.squareup.picasso:picasso:${picassoVersion}",
-            dagger           : "com.google.dagger:dagger:${daggerVersion}",
-            firebase         : "com.google.firebase:firebase-core:${firebaseVersion}",
-            firebaseMessaging: "com.google.firebase:firebase-messaging:${firebaseVersion}",
-            firebaseCrash    : "com.google.firebase:firebase-crash:${firebaseVersion}",
-            gmsAds           : "com.google.android.gms:play-services-ads:${gmsVersion}",
-
+            androidSupport       : "com.android.support:support-v4:${androidSupportVersion}",
+            appCompat            : "com.android.support:appcompat-v7:${androidSupportVersion}",
+            designSupport        : "com.android.support:design:${androidSupportVersion}",
+            vectorSupport        : "com.android.support:support-vector-drawable:${androidSupportVersion}",
+            cardView             : "com.android.support:cardview-v7:${androidSupportVersion}",
+            recyclerView         : "com.android.support:recyclerview-v7:${androidSupportVersion}",
+            palette              : "com.android.support:palette-v7:${androidSupportVersion}",
+            rxjava               : "io.reactivex:rxjava:${rxjavaVersion}",
+            rxandroid            : "io.reactivex:rxandroid:${rxandroidVersion}",
+            utils                : "com.mirhoseini.utils:utils:${utilsVersion}",
+            appSettings          : "com.mirhoseini.appsettings:appsettings:${appSettingsVersion}",
+            timber               : "com.jakewharton.timber:timber:${timberVersion}",
+            butterknife          : "com.jakewharton:butterknife:${butterknifeVersion}",
+            okhttp               : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
+            okhttpLogging        : "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}",
+            retrofit             : "com.squareup.retrofit2:retrofit:${retrofitVersion}",
+            retrofitConverter    : "com.squareup.retrofit2:converter-gson:${retrofitVersion}",
+            retrofitAdapter      : "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}",
+            picasso              : "com.squareup.picasso:picasso:${picassoVersion}",
+            dagger               : "com.google.dagger:dagger:${daggerVersion}",
+            gmsAds               : "com.google.android.gms:play-services-ads:${gmsVersion}",
+            rxbinding            : "com.jakewharton.rxbinding:rxbinding:${rxbindingVersion}",
     ]
 
     aptLibraries = [

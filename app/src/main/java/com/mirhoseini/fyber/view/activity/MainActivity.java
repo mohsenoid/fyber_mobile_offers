@@ -121,8 +121,6 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
         fragmentTransaction.commitAllowingStateLoss();
     }
 
-
-
     private void openLoginActivity() {
         startActivityForResult(LoginActivity.newIntent(context), REQUEST_CODE_LOGIN);
     }
@@ -193,6 +191,7 @@ public class MainActivity extends BaseActivity implements MainView, OffersFragme
 //        Intent detailsIntent = DetailsActivity.newIntent(context, offer);
 //        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedView, "cover");
 //        ActivityCompat.startActivity(this, detailsIntent, options.toBundle());
+        showMessage("Item clicked: " + offer.getTitle());
     }
 
 }

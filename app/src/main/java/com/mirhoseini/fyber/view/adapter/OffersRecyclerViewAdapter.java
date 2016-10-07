@@ -6,12 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fyber.api.Offer;
+import com.jakewharton.rxbinding.view.RxView;
 import com.mirhoseini.fyber.BR;
 import com.mirhoseini.fyber.R;
-import com.mirhoseini.fyber.view.fragment.OffersFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.inject.Inject;
+
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.PublishSubject;
 
 
 /**
@@ -19,12 +25,12 @@ import java.util.Arrays;
  */
 public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OfferViewHolder> {
 
-    private final OffersFragment.OnListFragmentInteractionListener listener;
-
     private ArrayList<Offer> offers = new ArrayList<>();
 
-    public OffersRecyclerViewAdapter(OffersFragment.OnListFragmentInteractionListener listener) {
-        this.listener = listener;
+    private PublishSubject<Offer> notify = PublishSubject.create();
+
+    @Inject
+    public OffersRecyclerViewAdapter() {
     }
 
     public void setOffers(Offer[] offers) {
@@ -51,13 +57,13 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OfferViewHol
         holder.getBinding().setVariable(BR.offer, offer);
         holder.getBinding().executePendingBindings();
 
-        holder.view.setOnClickListener(v -> {
-            if (null != listener) {
-                // Notify the active callbacks interface (the activity, if the
-                // fragment is attached to one) that an item has been selected.
-                listener.onListFragmentInteraction(holder.offer);
-            }
-        });
+        RxView.clicks(holder.view)
+                .map(aVoid -> holder.offer)
+                .subscribe(notify::onNext);
+    }
+
+    public Observable<Offer> asObservable() {
+        return notify.asObservable();
     }
 
     @Override

@@ -6,8 +6,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.mirhoseini.fyber.Presentation.LoginPresenter;
 import com.mirhoseini.fyber.R;
 import com.mirhoseini.fyber.di.component.ApplicationComponent;
@@ -18,7 +20,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import timber.log.Timber;
 
 /**
@@ -45,33 +46,14 @@ public class LoginActivity extends BaseActivity implements LoginView {
     EditText applicationId;
     @BindView(R.id.pub0)
     EditText pub0;
+    @BindView(R.id.cancel)
+    Button cancel;
+    @BindView(R.id.save)
+    Button save;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
         return intent;
-    }
-
-    @OnClick(R.id.cancel)
-    void onCancelClick() {
-        Intent intent = getIntent();
-        setResult(RESULT_CANCELED, intent);
-        finish();
-    }
-
-    @OnClick(R.id.save)
-    void onSaveClick() {
-        if (checkValuesValidation()) {
-            presenter.saveValues(
-                    userId.getText().toString().trim(),
-                    apiKey.getText().toString().trim(),
-                    Integer.parseInt(applicationId.getText().toString().trim()),
-                    pub0.getText().toString().trim()
-            );
-
-            Intent intent = getIntent();
-            setResult(RESULT_OK, intent);
-            finish();
-        }
     }
 
     private boolean checkValuesValidation() {
@@ -120,11 +102,36 @@ public class LoginActivity extends BaseActivity implements LoginView {
         // inject views using ButterKnife
         ButterKnife.bind(this);
 
+        RxView.clicks(cancel).subscribe(this::cancelLogin);
+
+        RxView.clicks(save).subscribe(this::saveLogin);
+
         setupToolbar();
 
         presenter.loadValues();
 
         Timber.d("Login Activity Created");
+    }
+
+    private void cancelLogin(Void v) {
+        Intent intent = getIntent();
+        setResult(RESULT_CANCELED, intent);
+        finish();
+    }
+
+    private void saveLogin(Void v) {
+        if (checkValuesValidation()) {
+            presenter.saveValues(
+                    userId.getText().toString().trim(),
+                    apiKey.getText().toString().trim(),
+                    Integer.parseInt(applicationId.getText().toString().trim()),
+                    pub0.getText().toString().trim()
+            );
+
+            Intent intent = getIntent();
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
     private void setupToolbar() {

@@ -118,6 +118,15 @@ public class OffersFragment extends BaseFragment implements OffersView, SwipeRef
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        adapter.asObservable()
+                .filter(offer -> null != listener)
+                .subscribe(listener::onListFragmentInteraction);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_offers, container, false);

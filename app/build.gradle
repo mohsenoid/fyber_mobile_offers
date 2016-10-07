@@ -15,7 +15,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         /* replace with custom MockTestRunner */
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner "com.mirhoseini.fyber.test.dagger.MockFyberTestRunner"
     }
 
@@ -74,6 +74,7 @@ dependencies {
     compile rootProject.ext.libraries.gmsAds
 
     compile rootProject.ext.libraries.rxandroid
+    compile rootProject.ext.libraries.rxbinding
 
     compile rootProject.ext.libraries.utils
     compile rootProject.ext.libraries.appSettings

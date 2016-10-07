@@ -50,10 +50,4 @@ public class AppOffersModule extends OffersModule {
         }
     }
 
-    @Provides
-    @OffersScope
-    public OffersRecyclerViewAdapter provideOffersRecyclerViewAdapter() {
-        return new OffersRecyclerViewAdapter(listener);
-    }
-
 }
