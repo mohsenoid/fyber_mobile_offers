@@ -1,4 +1,4 @@
-Fyber Mobile Offers Application [![CircleCI](https://circleci.com/gh/mmirhoseini/fyber_mobile_offers.svg?style=svg)](https://circleci.com/gh/mmirhoseini/fyber_mobile_offers)
+Fyber Mobile Offers Application [![CircleCI](https://circleci.com/gh/mmirhoseini/fyber_mobile_offers.svg?style=svg)](https://circleci.com/gh/mmirhoseini/fyber_mobile_offers) [![Build Status](https://travis-ci.org/mmirhoseini/fyber_mobile_offers.svg?branch=master)](https://travis-ci.org/mmirhoseini/fyber_mobile_offers)
 ===============================
 
 This repository holds the source code of the Fyber Mobile Offers Application, a simple Android client for the [Fyber.com](http://fyber.com).
