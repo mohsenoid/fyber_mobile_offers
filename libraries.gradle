@@ -1,7 +1,7 @@
 ext {
     minSdkVersion = 9
     compileSdkVersion = 24
-    buildToolsVersion = "24.0.2"
+    buildToolsVersion = "24.0.3"
 
     //Android
     androidSupportVersion = "24.2.1"
