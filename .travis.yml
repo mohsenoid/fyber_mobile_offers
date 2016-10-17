@@ -20,8 +20,8 @@ jdk:
 
 before_install:
   - echo y | sudo apt-get update
-  - echo y | sudo apt-get install openjdk-6-jre
-  - export JAVA6_HOME=/usr/lib/jvm/java-6-oracle
+  - echo y | sudo apt-get install openjdk-7-jre
+  - export JAVA7_HOME=/usr/lib/jvm/java-7-oracle
   - export JAVA8_HOME=/usr/lib/jvm/java-8-oracle
   - export JAVA_HOME=$JAVA8_HOME
   - chmod +x gradlew
