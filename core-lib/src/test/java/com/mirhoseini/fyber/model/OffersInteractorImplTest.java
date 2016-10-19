@@ -49,7 +49,7 @@ public class OffersInteractorImplTest {
         expectedResult.setOffers(expectedOffers);
         expectedResult.setPages(1);
 
-        // moch scheduler to run immediately
+        // mock scheduler to run immediately
         when(scheduler.mainThread())
                 .thenReturn(Schedulers.immediate());
         when(scheduler.backgroundThread())
